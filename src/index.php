@@ -1,8 +1,10 @@
 <?php
 require 'vendor\autoload.php';
 
+
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-  $r->addRoute('GET', 'employee', 'get_all_employees');
+  $r->addRoute('GET', '/', 'App\Controllers\EmployeeController/index');
+  $r->addRoute('GET', '/employees', 'App\Controllers\EmployeeController/index');
 });
 
 // Fetch method and URI from somewhere
@@ -28,17 +30,8 @@ switch ($routeInfo[0]) {
     break;
   case FastRoute\Dispatcher::FOUND:
     $handler = $routeInfo[1];
-    $vars = $routeInfo[2];
-    // ... call $handler with vars
+    $vars = ($httpMethod == 'POST') ? $_POST : $routeInfo[2];
+    list($class, $method) = explode("/", $handler, 2);
+    call_user_func_array(array(new $class, $method), $vars);
     break;
 }
-
-?>
-
-
-
-<h1>
-  <?php
-  echo "Hello World btw!";
-  ?>
-</h1>
