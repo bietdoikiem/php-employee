@@ -1,6 +1,11 @@
 <?php
-require 'vendor\autoload.php';
+require '..\vendor\autoload.php';
 
+use App\Utils\ServerLogger;
+
+/**
+ * Define STDIN, STDOUT and STDERR stream output for PHP built-in web server
+ */
 if (!defined('STDIN'))  define('STDIN',  fopen('php://stdin',  'rb'));
 if (!defined('STDOUT')) define('STDOUT', fopen('php://stdout', 'wb'));
 if (!defined('STDERR')) define('STDERR', fopen('php://stderr', 'wb'));
@@ -37,7 +42,7 @@ switch ($routeInfo[0]) {
     $vars = ($httpMethod == 'POST') ? $_POST : $routeInfo[2];
 
     list($class, $method) = explode("/", $handler, 2);
-    App\Utils\ServerLogger::log("Var:", $vars);
-    call_user_func_array(array(new $class, $method), $vars);
+    ServerLogger::log("Var:", $vars);
+    call_user_func_array(array(new $class(), $method), $vars);
     break;
 }
