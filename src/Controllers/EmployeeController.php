@@ -7,6 +7,10 @@ use App\Utils\View;
 class EmployeeController {
 
   public const ROOT_URL = 'http://localhost:8080/';
+
+  public function __construct() {
+  }
+
   /**
    * Show the index page
    */

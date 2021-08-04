@@ -3,12 +3,16 @@ require '..\vendor\autoload.php';
 
 use App\Utils\ServerLogger;
 
+
+$container = new DI\Container();
+
 /**
  * Define STDIN, STDOUT and STDERR stream output for PHP built-in web server
  */
 if (!defined('STDIN'))  define('STDIN',  fopen('php://stdin',  'rb'));
 if (!defined('STDOUT')) define('STDOUT', fopen('php://stdout', 'wb'));
 if (!defined('STDERR')) define('STDERR', fopen('php://stderr', 'wb'));
+
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
   $r->addRoute('GET', '/', 'App\Controllers\EmployeeController/index');
@@ -43,6 +47,6 @@ switch ($routeInfo[0]) {
 
     list($class, $method) = explode("/", $handler, 2);
     ServerLogger::log("Var:", $vars);
-    call_user_func_array(array(new $class(), $method), $vars);
+    call_user_func_array(array($container->get($class), $method), $vars);
     break;
 }

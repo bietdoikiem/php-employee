@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Entities;
+namespace App\Models\Entities;
 
 class Employee {
 
