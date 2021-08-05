@@ -317,7 +317,7 @@ header_title %} Employees {% endblock %} {% block body %}
 			let age = parseInt(button.data("age"), 10);
 			let address = button.data("address");
 			let phone_number = button.data("phonenumber");
-			$("#edit-employee-form").attr("action", `/employees/edit/${id}`);
+			$("#edit-employee-form").attr("action", `/employees/edit`);
 			// Edit Modal
 			var modal = $(this);
 			modal.find(".modal-title").text(`Edit Employee ID ${id}`);

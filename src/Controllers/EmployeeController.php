@@ -33,4 +33,13 @@ class EmployeeController {
     $this->employeeService->add_employee($first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
     header("Location: " . self::ROOT_URL);
   }
+
+  /**
+   * Edit an employee
+   */
+  public function edit(int $id, string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
+    ServerLogger::log("Form posted! first_name: " . $first_name);
+    $this->employeeService->edit_employee($id, $first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
+    header("Location: " . self::ROOT_URL);
+  }
 }

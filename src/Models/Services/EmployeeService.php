@@ -28,7 +28,7 @@ class EmployeeService {
    */
   public function add_employee(string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
     // Read first to check if match any ID
-    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE);
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: false);
     $last_data = end($rows_data);
     $last_id = $last_data[0];
     if ($last_id == "id") {
@@ -44,21 +44,43 @@ class EmployeeService {
   }
 
   /**
-   * Read all Employees in CSV
+   * Read all Employees in Employees.csv
    * 
    * @return array $emp_list -> List of employees
    */
   public function read_all_employees(): array {
     $emp_list = array();
-    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE);
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: true);
     foreach ($rows_data as &$emp) {
       $emp[0] = intval($emp[0]); // Convert id to int
       $emp[4] = intval($emp[4]); // Convert age to int 
-      ServerLogger::log("Age: " . $emp[4]);
       $emp_obj = new Employee(...$emp);
       array_push($emp_list, $emp_obj);
     }
     return $emp_list;
+  }
+
+  /**
+   * Edit an Employee in Employees.csv
+   * 
+   * @return bool true/false -> Edit successful or not
+   */
+  public function edit_employee(int $id, string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number): bool {
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: false);
+    $is_emp_found = false;
+    foreach ($rows_data as &$emp) {
+      if ($emp[0] == $id) {
+        $is_emp_found = true;
+        $emp[1] = $first_name;
+        $emp[2] = $last_name;
+        $emp[3] = $gender;
+        $emp[4] = $age;
+        $emp[5] = $address;
+        $emp[6] = $phone_number;
+      }
+    }
+    $this->write_bucket_csv_multiple($rows_data, BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE);
+    return $is_emp_found;
   }
 
   /**
@@ -68,10 +90,10 @@ class EmployeeService {
    * @param string $objectName
    * @return array $rows_data
    */
-  public function read_bucket_csv(string $bucketName, string $objectName): array {
+  public function read_bucket_csv(string $bucketName, string $objectName, bool $skip_header = false): array {
     ServerLogger::log("=> Performing read a CSV file for object" . $objectName);
     $objectURI = "gs://{$bucketName}/{$objectName}";
-    $rows_data = $this->read_csv($objectURI, skip_header: true);
+    $rows_data = $this->read_csv($objectURI, $skip_header);
     ServerLogger::log("=> Successfully read {$objectURI}" . PHP_EOL);
     return $rows_data;
   }
@@ -96,19 +118,39 @@ class EmployeeService {
     return $result;
   }
 
+
+  /**
+   * Write CSV file on bucket storage with multiple rows at a time
+   * 
+   * @param array $rows -> 2D array of CSV rows
+   * @param string $uri -> Link to resource
+   * @return bool true/false
+   */
+  public function write_bucket_csv_multiple(array $rows, string $bucketName, string $objectName): bool {
+    ServerLogger::log("=> Performing edit row to a CSV file for object" . $objectName);
+    $objectURI = "gs://{$bucketName}/{$objectName}";
+    $result = $this->write_csv_multiple($rows, $objectURI);
+    if ($result == false) {
+      ServerLogger::log("=> CANNOT edit {$objectURI}" . PHP_EOL);
+      return $result;
+    }
+    ServerLogger::log("=> Successfully edit {$objectURI}" . PHP_EOL);
+    return true;
+  }
+
   /**
    * Read an object on Cloud Storage
    * @return undefined
    */
-  public function read_bucket_object($bucketName, $objectName) {
-    ServerLogger::log("=> Performing read for object " . $objectName);
-    $objectURI = "gs://{$bucketName}/{$objectName}";
-    ServerLogger::log('=> Successfully read gs://%s//%s' . PHP_EOL, $bucketName, $objectName);
-    return;
-  }
+  // public function read_bucket_object($bucketName, $objectName) {
+  //   ServerLogger::log("=> Performing read for object " . $objectName);
+  //   $objectURI = "gs://{$bucketName}/{$objectName}";
+  //   ServerLogger::log('=> Successfully read gs://%s//%s' . PHP_EOL, $bucketName, $objectName);
+  //   return;
+  // }
 
   /**
-   * Read a CSV object
+   * Read a CSV file
    * 
    * @param string $uri -> URI to source (Ex for Cloud Storage: gs://bucket/object)
    * @return array $row_list -> List of rows
@@ -137,7 +179,7 @@ class EmployeeService {
 
 
   /**
-   * Read a file via stream
+   * Read a file
    * 
    * @param string $uri -> link to resource
    * @return string $read_str
@@ -154,15 +196,35 @@ class EmployeeService {
   }
 
   /**
-   * Insert to the end of csv file
+   * Insert to the end of CSV file
    * 
-   * @param array $row -> array of CSV data by columns
-   * @param string $uri -> link to resource
+   * @param array $row -> Array of CSV data by columns
+   * @param string $uri -> Link to resource
    * @return bool true/false
    */
   public function insert_csv(array $row, string $uri): bool {
     if ($stream = fopen($uri, "a")) {
       fputcsv($stream, $row, separator: ",");
+    } else {
+      return false;
+    }
+    fclose($stream);
+    return true;
+  }
+
+
+  /**
+   * Write CSV file with multiple rows at a time
+   * 
+   * @param array $rows -> 2D array of CSV rows
+   * @param string $uri -> Link to resource
+   * @return bool true/false
+   */
+  public function write_csv_multiple(array $rows, string $uri): bool {
+    if ($stream = fopen($uri, "w")) {
+      foreach ($rows as $line) {
+        fputcsv($stream, $line, separator: ",");
+      }
     } else {
       return false;
     }

@@ -18,6 +18,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
   $r->addRoute('GET', '/', 'App\Controllers\EmployeeController/index');
   $r->addRoute('GET', '/employees', 'App\Controllers\EmployeeController/index');
   $r->addRoute('POST', '/employees/add', 'App\Controllers\EmployeeController/add');
+  $r->addRoute('POST', '/employees/edit', 'App\Controllers\EmployeeController/edit');
 });
 
 $container = new DI\Container();
