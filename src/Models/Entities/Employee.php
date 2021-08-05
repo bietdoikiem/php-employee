@@ -4,7 +4,7 @@ namespace App\Models\Entities;
 
 class Employee {
 
-  public string $id;
+  public int $id;
   public string $first_name;
   public string $last_name;
   public string $gender;
@@ -12,7 +12,8 @@ class Employee {
   public string $address;
   public string $phone_number;
 
-  public function __construct(string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
+  public function __construct(int $id, string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
+    $this->id = $id;
     $this->first_name = $first_name;
     $this->last_name = $last_name;
     $this->gender = $gender;
@@ -24,20 +25,20 @@ class Employee {
   /**
    * Get the value of id
    *
-   * @return string
+   * @return int
    */
-  public function getId(): string {
+  public function getId(): int {
     return $this->id;
   }
 
   /**
    * Set the value of id
    *
-   * @param string $id
+   * @param int $id
    *
    * @return self
    */
-  public function setId(string $id): self {
+  public function setId(int $id): self {
     $this->id = $id;
 
     return $this;

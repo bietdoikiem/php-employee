@@ -21,7 +21,10 @@
 		"php-di/php-di": "^6.3"
 	},
 	"scripts": {
-		"start": "php -S localhost:8080 -t public"
+		"start": [
+			"Composer\\Config::disableProcessTimeout",
+			"php -S localhost:8080 -t public"
+		]
 	},
 	"scripts-descriptions": {
 		"start": "Execute index.php"

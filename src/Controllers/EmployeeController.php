@@ -19,7 +19,10 @@ class EmployeeController {
    * Show the index page
    */
   public function index() {
-    View::renderTemplate('Employee/index.html');
+    $emp_list = $this->employeeService->read_all_employees();
+    View::renderTemplate('Employee/index.html', [
+      'emp_list' => $emp_list
+    ]);
   }
 
   /**
@@ -27,7 +30,7 @@ class EmployeeController {
    */
   public function add(string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
     ServerLogger::log("Form posted! first_name: " . $first_name);
-    $this->employeeService->add($first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
+    $this->employeeService->add_employee($first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
     header("Location: " . self::ROOT_URL);
   }
 }
