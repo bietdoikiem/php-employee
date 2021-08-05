@@ -9,7 +9,6 @@ use App\Utils\ServerLogger;
 class EmployeeController {
 
   private $employeeService;
-  public const ROOT_URL = 'http://localhost:8080';
 
   public function __construct(EmployeeService $employeeService) {
     $this->employeeService = $employeeService;
@@ -28,18 +27,26 @@ class EmployeeController {
   /**
    * Add employee
    */
-  public function add(string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
+  public function add(string $first_name, string $last_name, string $gender, $age, string $address, string $phone_number) {
     ServerLogger::log("Form posted! first_name: " . $first_name);
-    $this->employeeService->add_employee($first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
-    header("Location: " . self::ROOT_URL);
+    $this->employeeService->add_employee($first_name,  $last_name,  $gender,  (int) $age, $address,  $phone_number);
+    if (getenv("DEPLOY_URL")) {
+      header("Location: " . getenv("DEPLOY_URL"));
+    } else {
+      header("Location: " . "http://localhost:8080");
+    }
   }
 
   /**
    * Edit an employee
    */
-  public function edit(int $id, string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
+  public function edit(int $id, string $first_name, string $last_name, string $gender, $age, string $address, string $phone_number) {
     ServerLogger::log("Form posted! first_name: " . $first_name);
-    $this->employeeService->edit_employee($id, $first_name,  $last_name,  $gender,  $age, $address,  $phone_number);
-    header("Location: " . self::ROOT_URL);
+    $this->employeeService->edit_employee($id, $first_name,  $last_name,  $gender,  (int) $age, $address,  $phone_number);
+    if (getenv("DEPLOY_URL")) {
+      header("Location: " . getenv("DEPLOY_URL"));
+    } else {
+      header("Location: " . "http://localhost:8080");
+    }
   }
 }

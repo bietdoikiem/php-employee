@@ -9,11 +9,11 @@ use App\Utils\BucketConfig;
 
 class EmployeeService {
 
-  public StorageClient $storage;
+  public $storage;
 
   public function __construct() {
     $this->storage = new StorageClient([
-      'keyFile' => json_decode(file_get_contents(dirname(dirname(__DIR__)) . '\Resources\crafty-coral-281804-c3a7354e1ae6.json'), true),
+      'keyFile' => json_decode(file_get_contents(dirname(dirname(__DIR__)) . '/Resources/crafty-coral-281804-c3a7354e1ae6.json'), true),
       'projectId' => 'crafty-coral-281804'
     ]);
     $this->storage->registerStreamWrapper();
@@ -28,7 +28,7 @@ class EmployeeService {
    */
   public function add_employee(string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number) {
     // Read first to check if match any ID
-    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: false);
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, false);
     $last_data = end($rows_data);
     $last_id = $last_data[0];
     if ($last_id == "id") {
@@ -50,10 +50,10 @@ class EmployeeService {
    */
   public function read_all_employees(): array {
     $emp_list = array();
-    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: true);
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, true);
     foreach ($rows_data as &$emp) {
-      $emp[0] = intval($emp[0]); // Convert id to int
-      $emp[4] = intval($emp[4]); // Convert age to int 
+      $emp[0] = intval($emp[0], 10); // Convert id to int
+      $emp[4] = intval($emp[4], 10); // Convert age to int 
       $emp_obj = new Employee(...$emp);
       array_push($emp_list, $emp_obj);
     }
@@ -66,7 +66,7 @@ class EmployeeService {
    * @return bool true/false -> Edit successful or not
    */
   public function edit_employee(int $id, string $first_name, string $last_name, string $gender, int $age, string $address, string $phone_number): bool {
-    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, skip_header: false);
+    $rows_data = $this->read_bucket_csv(BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE, false);
     $is_emp_found = false;
     foreach ($rows_data as &$emp) {
       if ($emp[0] == $id) {
@@ -90,7 +90,7 @@ class EmployeeService {
    * @param string $objectName
    * @return array $rows_data
    */
-  public function read_bucket_csv(string $bucketName, string $objectName, bool $skip_header = false): array {
+  public function read_bucket_csv(string $bucketName, string $objectName, bool $skip_header): array {
     ServerLogger::log("=> Performing read a CSV file for object" . $objectName);
     $objectURI = "gs://{$bucketName}/{$objectName}";
     $rows_data = $this->read_csv($objectURI, $skip_header);
@@ -155,12 +155,12 @@ class EmployeeService {
    * @param string $uri -> URI to source (Ex for Cloud Storage: gs://bucket/object)
    * @return array $row_list -> List of rows
    */
-  public function read_csv(string $uri, bool $skip_header = false): array {
+  public function read_csv(string $uri, bool $skip_header): array {
     $row_list = array();
     // Open a stream in read-only mode
     if ($stream = fopen($uri, "r")) {
       while (!feof($stream)) {
-        for ($i = 0; $row = fgetcsv($stream, separator: ","); ++$i) {
+        for ($i = 0; $row = fgetcsv($stream, 1000, ","); ++$i) {
           /* Skip header switch */
           if ($skip_header == False) {
             array_push($row_list, $row);
@@ -204,7 +204,7 @@ class EmployeeService {
    */
   public function insert_csv(array $row, string $uri): bool {
     if ($stream = fopen($uri, "a")) {
-      fputcsv($stream, $row, separator: ",");
+      fputcsv($stream, $row, ",");
     } else {
       return false;
     }
@@ -223,7 +223,7 @@ class EmployeeService {
   public function write_csv_multiple(array $rows, string $uri): bool {
     if ($stream = fopen($uri, "w")) {
       foreach ($rows as $line) {
-        fputcsv($stream, $line, separator: ",");
+        fputcsv($stream, $line, ",");
       }
     } else {
       return false;
