@@ -92,4 +92,15 @@ class EmployeeService {
     fclose($stream);
     return $row_list;
   }
+
+  public function read_file(string $uri): array {
+    // Open a stream in read-only mode
+    if ($stream = fopen($uri, "r")) {
+      while (!feof($stream)) {
+        $read_str = fread($stream, 1024);
+      }
+    }
+    fclose($stream);
+    return $read_str;
+  }
 }
