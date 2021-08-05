@@ -76,16 +76,16 @@ span {
 }
 
 #sidebar {
-	min-width: 250px;
-	max-width: 250px;
+	min-width: 300px;
+	max-width: 300px;
 	background: #007bff;
 	color: #fff;
 	transition: all 0.3s;
 }
 
 #sidebar.active {
-	min-width: 80px;
-	max-width: 80px;
+	min-width: 90px;
+	max-width: 90px;
 	text-align: center;
 }
 

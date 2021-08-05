@@ -4,21 +4,24 @@ require '..\vendor\autoload.php';
 use App\Utils\ServerLogger;
 
 
-$container = new DI\Container();
 
 /**
  * Define STDIN, STDOUT and STDERR stream output for PHP built-in web server
+ * And
+ * Some configurations for PHP built-in web server
  */
 if (!defined('STDIN'))  define('STDIN',  fopen('php://stdin',  'rb'));
 if (!defined('STDOUT')) define('STDOUT', fopen('php://stdout', 'wb'));
 if (!defined('STDERR')) define('STDERR', fopen('php://stderr', 'wb'));
 
-
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
   $r->addRoute('GET', '/', 'App\Controllers\EmployeeController/index');
   $r->addRoute('GET', '/employees', 'App\Controllers\EmployeeController/index');
-  $r->addRoute('GET', '/employees/add', 'App\Controllers\EmployeeController/add');
+  $r->addRoute('POST', '/employees/add', 'App\Controllers\EmployeeController/add');
 });
+
+$container = new DI\Container();
+
 
 // Fetch method and URI from somewhere
 $httpMethod = $_SERVER['REQUEST_METHOD'];
@@ -44,9 +47,7 @@ switch ($routeInfo[0]) {
   case FastRoute\Dispatcher::FOUND:
     $handler = $routeInfo[1];
     $vars = ($httpMethod == 'POST') ? $_POST : $routeInfo[2];
-
     list($class, $method) = explode("/", $handler, 2);
-    ServerLogger::log("Var:", $vars);
     call_user_func_array(array($container->get($class), $method), $vars);
     break;
 }
