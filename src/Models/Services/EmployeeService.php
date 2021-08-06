@@ -39,6 +39,8 @@ class EmployeeService {
     ServerLogger::log("=> Performing inserting new employee to CSV file!");
     // Insert new data
     $insert_row = array($insert_id, $first_name, $last_name, $gender, $age, $address, $phone_number);
+    ServerLogger::log("=> Insert Array: ", $insert_row);
+    ServerLogger::log("=> Inserted Gender is: ", $gender);
     $result = $this->insert_bucket_csv($insert_row, BucketConfig::BUCKET_NAME, BucketConfig::EMPLOYEES_FILE);
     return $result;
   }

@@ -2,6 +2,8 @@
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 use App\Utils\ServerLogger;
+use ArgumentsResolver\InDepthArgumentsResolver;
+use ArgumentsResolver\NamedArgumentsResolver;
 
 
 
@@ -49,6 +51,7 @@ switch ($routeInfo[0]) {
     $handler = $routeInfo[1];
     $vars = ($httpMethod == 'POST') ? $_POST : $routeInfo[2];
     list($class, $method) = explode("/", $handler, 2);
-    call_user_func_array(array($container->get($class), $method), $vars);
+    ServerLogger::log("=> Form Vars:", $vars);
+    call_user_func_array(array($container->get($class), $method), (new NamedArgumentsResolver([$container->get($class), $method]))->resolve($vars));
     break;
 }

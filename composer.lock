@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec4b58d0fac0aa98c248b0f653003c38",
+    "content-hash": "f62c59abd29c78d17737b33ea046ef68",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -1244,6 +1244,68 @@
                 "source": "https://github.com/rize/UriTemplate/tree/0.3.3"
             },
             "time": "2021-02-22T15:03:38+00:00"
+        },
+        {
+            "name": "rybakit/arguments-resolver",
+            "version": "v0.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rybakit/arguments-resolver.git",
+                "reference": "14a4d986a0ea112cbf98a93b665face61c7da610"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rybakit/arguments-resolver/zipball/14a4d986a0ea112cbf98a93b665face61c7da610",
+                "reference": "14a4d986a0ea112cbf98a93b665face61c7da610",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1|^8"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.13",
+                "phpunit/phpunit": "^7.1|^8|^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ArgumentsResolver\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eugene Leonovich",
+                    "email": "gen.work@gmail.com"
+                }
+            ],
+            "description": "ArgumentsResolver allows you to determine the arguments to pass to a function or method.",
+            "homepage": "https://github.com/rybakit/arguments-resolver",
+            "keywords": [
+                "arguments",
+                "callable",
+                "function",
+                "injection",
+                "invoke",
+                "method",
+                "parameters",
+                "reflection",
+                "resolver"
+            ],
+            "support": {
+                "issues": "https://github.com/rybakit/arguments-resolver/issues",
+                "source": "https://github.com/rybakit/arguments-resolver/tree/v0.6.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/rybakit",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-06-22T13:40:00+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

@@ -29,6 +29,7 @@ class EmployeeController {
    */
   public function add(string $first_name, string $last_name, string $gender, $age, string $address, string $phone_number) {
     ServerLogger::log("Form posted! first_name: " . $first_name);
+    ServerLogger::log("Form posted! gender: " . $gender);
     $this->employeeService->add_employee($first_name,  $last_name,  $gender,  (int) $age, $address,  $phone_number);
     if (getenv("DEPLOY_URL")) {
       header("Location: " . getenv("DEPLOY_URL"));
